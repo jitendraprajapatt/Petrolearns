@@ -21,12 +21,12 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
 }) => {
   let imageUrl;
 
-if (/^https?:\/\//.test(subject.image)) {
+if (/^https?:\/\//.test(image)) {
   // If subject.image is a full URL, use it directly
-  imageUrl = subject.image;
+  imageUrl = image;
 } else {
   // Otherwise, prepend your base URL
-  imageUrl = `https://backend-petrolearns.onrender.com${subject.image}`;
+  imageUrl = `https://backend-petrolearns.onrender.com${image}`;
 }
 
   return (
