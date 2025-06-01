@@ -19,7 +19,15 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   subdomain,
   onExplore,
 }) => {
-  const imageUrl = `http://localhost:5000${image}`;
+  let imageUrl;
+
+if (/^https?:\/\//.test(subject.image)) {
+  // If subject.image is a full URL, use it directly
+  imageUrl = subject.image;
+} else {
+  // Otherwise, prepend your base URL
+  imageUrl = `https://backend-petrolearns.onrender.com${subject.image}`;
+}
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col transition hover:shadow-md text-sm max-w-xs mx-auto">
