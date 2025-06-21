@@ -11,29 +11,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
-    ],
     "/study/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/study/page.css",
       "static/chunks/app/study/page.js"
-    ],
-    "/study/[Subject]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/study/[Subject]/page.css",
-      "static/chunks/app/study/[Subject]/page.js"
-    ],
-    "/study/[Subject]/create/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/study/[Subject]/create/page.css",
-      "static/chunks/app/study/[Subject]/create/page.js"
     ],
     "/about/page": [
       "static/chunks/webpack.js",
@@ -46,11 +28,23 @@
       "static/css/app/contact/page.css",
       "static/chunks/app/contact/page.js"
     ],
-    "/admin/page": [
+    "/signup/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/admin/page.css",
-      "static/chunks/app/admin/page.js"
+      "static/css/app/signup/page.css",
+      "static/chunks/app/signup/page.js"
+    ],
+    "/volunteer/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/volunteer/page.css",
+      "static/chunks/app/volunteer/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/page.css",
+      "static/chunks/app/login/page.js"
     ]
   }
 }
