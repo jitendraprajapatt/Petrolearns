@@ -19,13 +19,16 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   subdomain,
   onExplore,
 }) => {
+
    let imageUrl;
+
 
 if (/^https?:\/\//.test(image)) {
   // If subject.image is a full URL, use it directly
   imageUrl = image;
 } else {
   // Otherwise, prepend your base URL
+
   imageUrl = `${process.env.BASE_IMAGE}${image}`;
 }
 
