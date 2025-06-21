@@ -1,9 +1,10 @@
 {
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/study/page": "app/study/page.js",
+  "/about/page": "app/about/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/contact/page": "app/contact/page.js",
   "/login/page": "app/login/page.js",
-  "/study/[Subject]/page": "app/study/[Subject]/page.js",
-  "/study/[Subject]/create/page": "app/study/[Subject]/create/page.js",
-  "/admin/page": "app/admin/page.js",
+  "/volunteer/page": "app/volunteer/page.js",
   "/page": "app/page.js"
 }

@@ -15,7 +15,14 @@ type SubjectCardProps = {
 };
 
 export default function SubjectCard({ subject, onDelete, onExplore }: SubjectCardProps) {
-  const imageUrl = `http://localhost:5000${subject.image}`;
+  let imageUrl ;
+  if (/^https?:\/\//.test(subject.image)) {
+  // If subject.image is a full URL, use it directly
+  imageUrl = subject.image;
+} else {
+  // Otherwise, prepend your base URL
+  imageUrl = `${process.env.BASE_IMAGE}${subject.image}`;
+}
 
   return (
     <div className="bg-white shadow-lg rounded-2xl overflow-hidden w-full md:w-80 transition-all duration-300 hover:shadow-xl flex flex-col">

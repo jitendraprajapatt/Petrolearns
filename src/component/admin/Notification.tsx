@@ -23,6 +23,7 @@ export default function NotificationModule() {
     try {
       setLoading(true);
       const res = await api.get('/notifications', { withCredentials: true });
+      console.log(res.data)
       setNotifications(res.data.notifications);
     } catch {
       customToast('Failed to fetch notifications', 'error');
@@ -32,8 +33,9 @@ export default function NotificationModule() {
   };
 
   const handleDelete = async (id: string) => {
+    console.log('on delete is call' ,id)
     try {
-      await api.post(`/notifications/${id}/delete`, {}, { withCredentials: true });
+      await api.delete(`/notifications/${id}/delete`, {});
       customToast('Notification deleted', 'success');
       fetchNotifications();
     } catch {
@@ -42,8 +44,9 @@ export default function NotificationModule() {
   };
 
   const handleRemarkSubmit = async (id: string ,remarkText:string) => {
+    console.log("remark :" , id, remarkText)
     try {
-      await api.post(`/notifications/${id}/remark`, { remark: remarkText });
+      await api.post(`/notifications/${id}/remark`, { remarkText });
       customToast('Remark submitted', 'success');
       setRemarkText('');
       fetchNotifications();

@@ -14,7 +14,8 @@ import {
 import { Slate, Editable, withReact, useSlate, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react';
 import { withHistory } from 'slate-history';
 
-import { CustomElement, CustomText } from '@/type/slate';
+// Ensure CustomElement, CustomText, and EmptyText are imported from your types file
+import { CustomElement, CustomText, EmptyText, ImageElement as ImageElementType, LinkElement as LinkElementType } from '@/type/slate';
 
 import {
   FiBold,
@@ -36,11 +37,11 @@ interface SlateEditorProps {
   readOnly?: boolean;
 }
 
-export default function SlateEditor({ 
-  value, 
-  onChange, 
+export default function SlateEditor({
+  value,
+  onChange,
   placeholder = "Start typing your content here...",
-  readOnly = false 
+  readOnly = false
 }: SlateEditorProps) {
   const editor = useMemo(() => {
     return withImages(withLinks(withHistory(withReact(createEditor()))));
@@ -51,9 +52,11 @@ export default function SlateEditor({
 
     switch (element.type) {
       case 'image':
-        return <ImageElement {...props} element={element} />;
+        // Cast element to ImageElementType for type safety within ImageElement
+        return <ImageElement {...props} element={element as ImageElementType} />;
       case 'link':
-        return <LinkElement {...props} element={element} />;
+        // Cast element to LinkElementType for type safety within LinkElement
+        return <LinkElement {...props} element={element as LinkElementType} />;
       case 'heading-one':
         return (
           <h1 {...props.attributes} className="text-3xl font-extrabold my-5 text-gray-900 leading-tight">
@@ -138,15 +141,15 @@ export default function SlateEditor({
       const { selection } = editor;
       if (selection && Range.isCollapsed(selection)) {
         const [match] = Editor.nodes(editor, {
-          match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && 
-                     ['bulleted-list', 'numbered-list'].includes((n as CustomElement).type),
+          match: n => !Editor.isEditor(n) && SlateElement.isElement(n) &&
+            ['bulleted-list', 'numbered-list'].includes((n as CustomElement).type),
         });
 
         if (match) {
           const [, path] = match;
           const [listItem] = Editor.nodes(editor, {
-            match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && 
-                       (n as CustomElement).type === 'list-item',
+            match: n => !Editor.isEditor(n) && SlateElement.isElement(n) &&
+              (n as CustomElement).type === 'list-item',
           });
 
           if (listItem) {
@@ -156,8 +159,8 @@ export default function SlateEditor({
             if (isEmpty) {
               event.preventDefault();
               Transforms.unwrapNodes(editor, {
-                match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && 
-                           ['bulleted-list', 'numbered-list'].includes((n as CustomElement).type),
+                match: n => !Editor.isEditor(n) && SlateElement.isElement(n) &&
+                  ['bulleted-list', 'numbered-list'].includes((n as CustomElement).type),
                 split: true,
               });
               Transforms.setNodes(editor, { type: 'paragraph' });
@@ -187,7 +190,7 @@ export default function SlateEditor({
     return (
       <div className="w-full h-full">
         <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-          <Slate editor={editor} initialValue={value} onChange={() => {}}>
+          <Slate editor={editor} initialValue={value} onChange={() => { }}>
             <Editable
               className="p-6 text-gray-800 leading-relaxed overflow-y-auto focus:outline-none custom-scrollbar"
               renderElement={renderElement}
@@ -378,13 +381,14 @@ const Leaf: React.FC<LeafProps> = ({ attributes, children, leaf }) => {
   return <span {...attributes}>{children}</span>;
 };
 
+// Use the specific ImageElementType from your types for better safety
 interface ImageElementProps extends RenderElementProps {
-  element: CustomElement & { type: 'image'; url: string };
+  element: ImageElementType; // Use the imported type
 }
 
 const ImageElement: React.FC<ImageElementProps> = ({ attributes, children, element }) => {
   const editor = useSlate();
-  
+
   const handleDelete = () => {
     const path = ReactEditor.findPath(editor, element);
     Transforms.removeNodes(editor, { at: path });
@@ -395,7 +399,7 @@ const ImageElement: React.FC<ImageElementProps> = ({ attributes, children, eleme
       <div className="flex justify-center">
         <img
           src={element.url}
-          alt="Embedded content"
+          alt={element.alt || 'Embedded content'} // Ensure alt is used, fallback if somehow empty
           className="max-w-full h-auto max-h-72 rounded-lg shadow-lg border border-gray-300 object-contain hover:scale-[1.01] transition-transform duration-200"
         />
       </div>
@@ -411,13 +415,14 @@ const ImageElement: React.FC<ImageElementProps> = ({ attributes, children, eleme
   );
 };
 
+// Use the specific LinkElementType from your types for better safety
 interface LinkElementProps extends RenderElementProps {
-  element: CustomElement & { type: 'link'; url: string };
+  element: LinkElementType; // Use the imported type
 }
 
 const LinkElement: React.FC<LinkElementProps> = ({ attributes, children, element }) => {
   const editor = useSlate();
-  
+
   const handleEdit = (e: React.MouseEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
@@ -430,11 +435,11 @@ const LinkElement: React.FC<LinkElementProps> = ({ attributes, children, element
   };
 
   return (
-    <a 
-      {...attributes} 
-      href={element.url} 
-      target="_blank" 
-      rel="noopener noreferrer" 
+    <a
+      {...attributes}
+      href={element.url}
+      target="_blank"
+      rel="noopener noreferrer"
       onClick={handleEdit}
       className="text-blue-600 underline hover:text-blue-800 transition-colors duration-200 cursor-pointer"
       style={{
@@ -501,34 +506,41 @@ const withLinks = (editor: Editor) => {
     return isInline(element);
   };
 
+  // Ensure isVoid for links is handled by the default Slate isVoid or combined with other custom voids
+  // Typically, links are inline and not void unless specified, but if your LinkElement is intended to be void, keep this.
+  // Based on common Slate patterns, links are usually inline non-void elements.
+  // If LinkElement is not void, you might remove 'link' from this check, or ensure your 'isVoid' function from 'withImages' handles it.
   editor.isVoid = (element) => {
     if (SlateElement.isElement(element)) {
       const customElement = element as CustomElement;
-      return customElement.type === 'image' || isVoid(element);
+      return customElement.type === 'image' || isVoid(element); // Only image is void in this current setup
     }
     return isVoid(element);
   };
 
+
   return editor;
 };
 
+// ** CORRECTED insertImage function **
 const insertImage = (editor: Editor, url: string) => {
   if (!url) {
     console.error("Attempted to insert image with empty URL.");
     return;
   }
 
-  const textNode: CustomText = { text: '' };
-  const imageNode: CustomElement = { 
-    type: 'image', 
-    url, 
-    children: [textNode] 
+  // Create the image node with explicit type assertion for children and alt property
+  const imageNode: ImageElementType = {
+    type: 'image',
+    url,
+    alt: '', // Add the 'alt' property. Provide a meaningful alt text if available.
+    children: [{ text: '' } as EmptyText] // Ensure children is an array of EmptyText
   };
 
   Transforms.insertNodes(editor, imageNode);
-  Transforms.insertNodes(editor, { 
-    type: 'paragraph', 
-    children: [{ text: '' }] 
+  Transforms.insertNodes(editor, {
+    type: 'paragraph',
+    children: [{ text: '' }]
   });
   Transforms.move(editor);
   ReactEditor.focus(editor);
@@ -552,7 +564,7 @@ const insertLink = (editor: Editor, url: string, text?: string) => {
       url,
       children: [{ text: linkText }]
     };
-    
+
     Transforms.insertNodes(editor, linkNode);
   }
 
@@ -642,8 +654,8 @@ const InsertLinkButton: React.FC<InsertLinkButtonProps> = ({ editor, onInsert })
           onInsert();
         }}
         className={`p-2.5 rounded-lg transition-colors duration-200 ${
-          isBlockActive(editor, 'link') 
-            ? 'bg-blue-500 text-white' 
+          isBlockActive(editor, 'link')
+            ? 'bg-blue-500 text-white'
             : 'text-gray-600 hover:bg-gray-200 hover:text-gray-800'
         }`}
         aria-label="Insert link"
